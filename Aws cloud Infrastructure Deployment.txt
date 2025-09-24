@@ -1,0 +1,23 @@
+1]create vpcA 1 name vpc1 192.168.0.0/16   sb1A 192.168.1.0/24  zone  1a> sb2A192.168.2.0/24  zone lb
+2]create vpcB2 name vpc2 10.0.0.0/16 sb1B 10.0.1.0/24 zone 1a>  sb2B 10.0.2.0/24 zone 1b
+3]create internet gateway attach to vpcA1
+4]create internet gateway attach to vpcB2
+5]route table vpc1 > subnet associate >edite route add internatgateway
+6]route table vpc2 > subnet associate >edite route add internatgateway
+7]peering connection > create name vpc1to2 > VPC ID (Requester) select vpc1 VPC ID (Accepter) select vpc2>create peering accept request 
+8]route table vpc 1 edit route add 2 vpc ip peering connection
+9]route table vpc 2 edit route add 1 vpc ip peering connection
+10]security group create select 1 vpc1 add inbound rule shh 0.0.0.0/0, all icmp ipv4 192.168.0.0/16,all icmp ipv4 10.0.0.0/16,http 0.0.0.0/0
+11]security group create select 1 vpc2 add inbound rule shh 0.0.0.0/0, all icmp ipv4 192.168.0.0/16,all icmp ipv4 10.0.0.0/16,http 0.0.0.0/0
+12]INSTANCE create 1 select vpc1 andexisting security group select> Auto-assign public IP enable  1instance create 
+13]INSTANCE create 1 select vpc 2 indexisting security group select> Auto-assign public IP enable  2instance create 
+14] instance 1 and 2  ping run but some not run go to check ec2instance icmp 
+15] all instance install http sever
+16]  2 instance tak template
+17 ] target group create vpc2 select and 2 and 3 instance selecte 
+18] load balcance > create > application load balance select vpc2 and avaliablity zone all select > security existiong not select default and target group select 
+19] load balancer DNS copy in browse run see two page
+20]autoscaling create > select template > vpc 2 select and securtiy group existibg select er created> add existion load balancing and target select 
+21]autoscaling dns copy and run 
+22]cloud front >create distrubution original domain selct > elb > create 
+23]cloudfront DNS COPY AND PASTE BROWSE RUN
