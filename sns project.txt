@@ -1,0 +1,185 @@
+1] SNS > topic create > Standard name DEMOSNS > Display name - optional My SNS Test > create topic
+create subscription > Topic ARN select  > Protocol type email  >Endpointgive your email  >create subscription 
+2]go to email checj confirm subscription 
+3]one amazon linux instance create  >
+STEP 1: ADD REQUIRED REPO FROM OFFICIAL NODEJS WEBSITE. (curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -)
+ instal nodejs (sudo yum install -y nodejs) 
+STEP 3: VERIFY INSTALLED VERSION.
+
+node -v
+npm -v
+> mkdir snsproject > cd snsproject/
+Initialise Node project( npm init -y) > 
+Install required dependencies(npm install express aws-sdk body-parser )> ls see (node_modules  package-lock.json  package.json)
+STEP 4: CREATE A app.js FILE AND RUN IT.
+>>vim app.js(const express = require('express');
+const bodyParser = require('body-parser');
+const AWS = require('aws-sdk');
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.json());
+
+// AWS SNS configuration with IAM role
+AWS.config.region = 'your sns region '; 			// Replace with your AWS region
+const sns = new AWS.SNS();
+
+// Route to handle email sending
+app.post('/send-email', async (req, res) => {
+  try {
+    const { email, subject, message } = req.body;
+
+    // AWS SNS Publish
+    await sns.publish({
+      TopicArn: 'your SNS url paste ',	// Replace with your SNS TOpic ARN
+      Message: message,
+      Subject: subject || 'Default Subject',
+    }).promise();
+
+    res.json({ success: true, message: 'Email sent successfully!' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'Error sending email.' });
+  }
+});
+
+// Default route handler serving HTML file
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+)
+
+4] vim index.html (<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNS project by AWS Avinash Reddy</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      background-color: #4CAF50;
+      margin: 0;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333;
+      color: #fff;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>SNS Project by Avinash</h1>
+  <form id="emailForm" action="/send-email" method="post">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <br>
+    <label for="subject">Subject:</label>
+    <input type="text" id="subject" name="subject">
+    <br>
+    <label for="message">Message:</label>
+    <textarea id="message" name="message" required></textarea>
+    <br>
+    <button type="button" onclick="sendEmail()">Send Email</button>
+  </form>
+
+  <footer>
+    A project by Avinash Reddy
+  </footer>
+
+  <script>
+    async function sendEmail() {
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+
+      try {
+        const response = await fetch('/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, subject, message }),
+        });
+
+        const result = await response.json();
+        alert(result.message);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error sending email.');
+      }
+    }
+  </script>
+</body>
+</html>
+)
+5]npm install -g pm2 ( if you want run that application then install this )
+6]pm2 list    (list all running processes/apps.)
+7]pm2 start app.js --name "my-app1"(Start app/services with name)
+8]paste public in browse not see
+9]Edit inbound rules > custom tcp port 3000 0.0.0.0/0
+10]go browse public ip:3000  run  (this application can run 3000)
+11] fiill detail and send email > show error 
+12] IAM > creat role > AWS service > use case ec2> AMazonSNSFULLACESS select 
+13]ec2 instance >action  >security >modify IAM role> select role
+(this ec2 instance can hit sns end point )
+14]fiill detail and send email > show email send successfully 
+15]go to email see your email 
